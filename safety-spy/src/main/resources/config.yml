@@ -1,0 +1,106 @@
+# ------------------------------------------------------------------
+#  SafetySpy - configuration
+#  All hiding is done on packet level via PacketEvents.
+#  Messages use MiniMessage: https://docs.advntr.dev/minimessage/format
+# ------------------------------------------------------------------
+
+# What is hidden from players who are NOT allowed to see spies.
+hide:
+  # Player entity in the world (spawn, movement, equipment, animations, ...).
+  entity: true
+  # Entry in the tab list. If 'entity' is false the spy is only unlisted
+  # (the client still needs the profile to render the entity).
+  tablist: true
+  # Keep the spy's profile known to clients and only unlist it from the tab list.
+  # false = profile is removed completely (strongest, also against hacked clients).
+  # true  = signed private messages (/msg, /me) of the spy display normally for everyone.
+  keep-profile: false
+  # Player count and player sample in the multiplayer server list.
+  server-list: true
+  # Player name in command tab-completion suggestions.
+  tab-complete: true
+  # Waypoint on the locator bar (1.21.6+ clients).
+  locator-bar: true
+  # Real join / quit messages of spies.
+  join-quit-messages: true
+  # Advancement broadcast messages of spies.
+  advancement-messages: true
+  # /list (and minecraft:list) shows only visible players.
+  list-command: true
+  # Commands that answer "No player was found" when a hidden spy's name is used
+  # as an argument (prevents /msg <spy> or /tp <spy> revealing the spy).
+  player-commands:
+    - msg
+    - tell
+    - w
+    - whisper
+    - tp
+    - teleport
+    - tpa
+    - tpahere
+    - pay
+    - trade
+
+# Who can still see spies.
+visibility:
+  # Players with this permission see spies normally.
+  see-permission: "safetyspy.see"
+  # Spies always see other spies.
+  spies-see-each-other: true
+  # How often (in ticks) permission changes of viewers are re-checked.
+  refresh-interval-ticks: 40
+
+# Fake messages broadcast when toggling, so the spy appears to leave / come back.
+fake-messages:
+  quit-on-enable: true
+  join-on-disable: true
+  quit: "<yellow><player> left the game"
+  join: "<yellow><player> joined the game"
+
+# Public chat of spies.
+#   BLOCK  - message is not sent, the spy gets a warning (safest)
+#   SEERS  - only players that can see spies receive it
+#   PUBLIC - everyone receives it (hidden viewers get it as system message)
+chat:
+  mode: BLOCK
+
+# Protection while in spy mode (prevents revealing the spy).
+safety:
+  invulnerable: true
+  no-mob-target: true
+  no-item-pickup: true
+  # Pressure plates, tripwires, farmland trampling.
+  no-physical-interact: true
+  # Sculk sensors / shriekers do not react to the spy.
+  no-sculk: true
+  # Spy cannot be pushed / push others.
+  no-collision: true
+  # Spy is ignored for the night-skip sleep check.
+  ignore-sleep: true
+  # Allow flight while in spy mode.
+  allow-flight: true
+
+# Remember spy mode across reconnects and restarts.
+persistence:
+  remember-state: true
+
+# Reminder for the spy itself.
+action-bar:
+  enabled: true
+  message: "<gray>You are in <gold>spy mode</gold><gray>."
+
+messages:
+  prefix: "<dark_gray>[<gold>SafetySpy</gold>]</dark_gray> "
+  enabled: "<green>Spy mode enabled."
+  disabled: "<red>Spy mode disabled."
+  enabled-other: "<green>Spy mode enabled for <white><player></white>."
+  disabled-other: "<red>Spy mode disabled for <white><player></white>."
+  no-permission: "<red>You don't have permission."
+  player-only: "<red>Only players can use this."
+  player-not-found: "<red>Player <white><player></white> not found."
+  list-header: "<gray>Players in spy mode (<white><count></white>):"
+  list-entry: "<dark_gray> - <white><player>"
+  list-empty: "<gray>Nobody is in spy mode."
+  reloaded: "<green>Configuration reloaded."
+  chat-blocked: "<red>You are in spy mode - your message was not sent."
+  usage: "<gray>Usage: <white>/spy [player|list|reload]"

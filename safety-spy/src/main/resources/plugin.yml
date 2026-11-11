@@ -1,0 +1,32 @@
+name: SafetySpy
+version: '${version}'
+main: net.f02k.safetyspy.SafetySpyPlugin
+api-version: '1.21'
+description: Safety spy mode for server staff - hides players completely via PacketEvents.
+depend: [packetevents]
+
+commands:
+  spy:
+    description: Toggle safety spy mode.
+    usage: /spy [player|list|reload]
+    aliases: [safetyspy, sspy]
+
+permissions:
+  safetyspy.use:
+    description: Toggle spy mode for yourself.
+    default: op
+  safetyspy.others:
+    description: Toggle spy mode for other players.
+    default: op
+  safetyspy.list:
+    description: List all players in spy mode.
+    default: op
+  safetyspy.reload:
+    description: Reload the configuration.
+    default: op
+  safetyspy.see:
+    description: See players that are in spy mode.
+    default: op
+  safetyspy.autojoin:
+    description: Automatically join the server in spy mode.
+    default: false
