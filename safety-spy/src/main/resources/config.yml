@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------
-#  SafetySpy - configuration
+#  4netlib - configuration
 #  All hiding is done on packet level via PacketEvents.
 #  Messages use MiniMessage: https://docs.advntr.dev/minimessage/format
 # ------------------------------------------------------------------
@@ -40,13 +40,28 @@ hide:
     - tpahere
     - pay
     - trade
+    - kick
+    - gamemode
+    - give
+    - kill
+    - effect
+    - clear
+    - xp
+    - experience
+    - spectate
+    - invsee
+    - enderchest
+    - ec
+    - whois
+    - seen
 
-# Who can still see spies.
+# Who can still see spies. By default NOBODY - not even OPs.
 visibility:
-  # Players with this permission see spies normally.
-  see-permission: "safetyspy.see"
-  # Spies always see other spies.
-  spies-see-each-other: true
+  # Empty = nobody can see spies. Set e.g. "4netlib.see" to allow it.
+  # The permission must be granted explicitly; OP status alone never grants it.
+  see-permission: ""
+  # Spies see other spies.
+  spies-see-each-other: false
   # How often (in ticks) permission changes of viewers are re-checked.
   refresh-interval-ticks: 40
 
@@ -90,7 +105,7 @@ action-bar:
   message: "<gray>You are in <gold>spy mode</gold><gray>."
 
 messages:
-  prefix: "<dark_gray>[<gold>SafetySpy</gold>]</dark_gray> "
+  prefix: "<dark_gray>[<gold>4netlib</gold>]</dark_gray> "
   enabled: "<green>Spy mode enabled."
   disabled: "<red>Spy mode disabled."
   enabled-other: "<green>Spy mode enabled for <white><player></white>."

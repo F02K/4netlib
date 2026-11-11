@@ -58,8 +58,8 @@ public final class SpyConfig {
                 .map(command -> command.toLowerCase(Locale.ROOT))
                 .collect(Collectors.toUnmodifiableSet());
 
-        seePermission = c.getString("visibility.see-permission", "safetyspy.see");
-        spiesSeeEachOther = c.getBoolean("visibility.spies-see-each-other", true);
+        seePermission = c.getString("visibility.see-permission", "");
+        spiesSeeEachOther = c.getBoolean("visibility.spies-see-each-other", false);
         refreshIntervalTicks = Math.max(1L, c.getLong("visibility.refresh-interval-ticks", 40L));
 
         chatMode = ChatMode.parse(c.getString("chat.mode", "BLOCK"));

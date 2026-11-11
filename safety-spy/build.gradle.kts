@@ -31,5 +31,5 @@ tasks.processResources {
 }
 
 tasks.jar {
-    archiveBaseName.set("SafetySpy")
+    archiveBaseName.set("4netlib")
 }

@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public final class SpyManager {
 
-    public static final String AUTOJOIN_PERMISSION = "safetyspy.autojoin";
+    public static final String AUTOJOIN_PERMISSION = "4netlib.autojoin";
 
     private final SafetySpyPlugin plugin;
     private final VisibilityRegistry registry;
@@ -192,7 +192,9 @@ public final class SpyManager {
 
     private boolean computeSeer(Player player) {
         String permission = config().seePermission;
-        return permission != null && !permission.isEmpty() && player.hasPermission(permission);
+        // isPermissionSet: OP status / permission defaults never make a player a seer.
+        return permission != null && !permission.isEmpty()
+                && player.isPermissionSet(permission) && player.hasPermission(permission);
     }
 
     /**

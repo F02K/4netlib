@@ -1,4 +1,4 @@
-name: SafetySpy
+name: 4netlib
 version: '${version}'
 main: net.f02k.safetyspy.SafetySpyPlugin
 api-version: '1.21'
@@ -9,24 +9,26 @@ commands:
   spy:
     description: Toggle safety spy mode.
     usage: /spy [player|list|reload]
-    aliases: [safetyspy, sspy]
+    aliases: [4netlib, sspy]
 
+# Only 4netlib.use is given to OPs by default. Everything that could reveal a
+# spy (seeing, listing, toggling others) must be granted explicitly.
 permissions:
-  safetyspy.use:
+  4netlib.use:
     description: Toggle spy mode for yourself.
     default: op
-  safetyspy.others:
-    description: Toggle spy mode for other players.
-    default: op
-  safetyspy.list:
-    description: List all players in spy mode.
-    default: op
-  safetyspy.reload:
+  4netlib.reload:
     description: Reload the configuration.
     default: op
-  safetyspy.see:
-    description: See players that are in spy mode.
-    default: op
-  safetyspy.autojoin:
+  4netlib.others:
+    description: Toggle spy mode for other players.
+    default: false
+  4netlib.list:
+    description: List all players in spy mode.
+    default: false
+  4netlib.see:
+    description: See players that are in spy mode (only if enabled in config.yml).
+    default: false
+  4netlib.autojoin:
     description: Automatically join the server in spy mode.
     default: false

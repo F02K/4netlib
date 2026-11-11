@@ -1,4 +1,4 @@
-# SafetySpy
+# 4netlib
 
 Safety spy mode for server staff. A spy is hidden on **packet level** via
 [PacketEvents](https://github.com/retrooper/packetevents) – not only via the
@@ -29,20 +29,25 @@ Bukkit API – so the player is invisible in every place a client could see them
 
 | Command | Permission | Default |
 |---|---|---|
-| `/spy` | `safetyspy.use` | op |
-| `/spy <player>` | `safetyspy.others` | op |
-| `/spy list` | `safetyspy.list` | op |
-| `/spy reload` | `safetyspy.reload` | op |
-| – see spies | `safetyspy.see` (configurable) | op |
-| – join in spy mode | `safetyspy.autojoin` | false |
+| `/spy` | `4netlib.use` | op |
+| `/spy reload` | `4netlib.reload` | op |
+| `/spy <player>` | `4netlib.others` | false |
+| `/spy list` | `4netlib.list` | false |
+| – see spies | `visibility.see-permission` (empty = nobody) | false |
+| – join in spy mode | `4netlib.autojoin` | false |
 
-Aliases: `/safetyspy`, `/sspy`.
+Aliases: `/4netlib`, `/sspy`.
+
+**Spies are hidden from everyone – including OPs.** OP status never grants
+seeing a spy. Only if `visibility.see-permission` is set *and* that permission
+is explicitly granted to a player (e.g. via LuckPerms) can they see spies.
+`/spy list` and `/spy <player>` only show / affect spies the sender can see.
 
 ## Build
 
 ```bash
 ./gradlew :safety-spy:build
-# -> safety-spy/build/libs/SafetySpy-1.0.0.jar
+# -> safety-spy/build/libs/4netlib-1.0.0.jar
 ```
 
 ## How it works

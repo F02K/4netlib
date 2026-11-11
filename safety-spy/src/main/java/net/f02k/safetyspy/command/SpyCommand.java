@@ -19,10 +19,10 @@ import java.util.Locale;
  */
 public final class SpyCommand implements TabExecutor {
 
-    private static final String PERM_USE = "safetyspy.use";
-    private static final String PERM_OTHERS = "safetyspy.others";
-    private static final String PERM_LIST = "safetyspy.list";
-    private static final String PERM_RELOAD = "safetyspy.reload";
+    private static final String PERM_USE = "4netlib.use";
+    private static final String PERM_OTHERS = "4netlib.others";
+    private static final String PERM_LIST = "4netlib.list";
+    private static final String PERM_RELOAD = "4netlib.reload";
 
     private final SafetySpyPlugin plugin;
     private final SpyManager manager;
@@ -70,6 +70,9 @@ public final class SpyCommand implements TabExecutor {
             return;
         }
         List<Player> spies = manager.onlineSpies();
+        if (sender instanceof Player viewer) {
+            spies.removeIf(spy -> !canSee(viewer, spy));
+        }
         if (spies.isEmpty()) {
             messages.send(sender, "list-empty");
             return;
@@ -86,7 +89,7 @@ public final class SpyCommand implements TabExecutor {
             return;
         }
         Player target = Bukkit.getPlayerExact(name);
-        if (target == null) {
+        if (target == null || (sender instanceof Player viewer && !canSee(viewer, target))) {
             messages.send(sender, "player-not-found", Placeholder.unparsed("player", name));
             return;
         }
