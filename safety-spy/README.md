@@ -53,9 +53,63 @@ seeing a spy. All `hide.*` and `safety.*` options are enabled by default.
 ## Build
 
 ```bash
-./gradlew :safety-spy:build
-# -> safety-spy/build/libs/4netlib-1.0.0.jar
+./gradlew dist
 ```
+
+Produces `build/dist/`:
+
+```
+4netlib-1.0.0.jar        -> plugins/
+modules/
+  4netlib-safety.jar     -> plugins/4netlib/modules/
+  4netlib-chat.jar       -> plugins/4netlib/modules/
+  4netlib-actionbar.jar  -> plugins/4netlib/modules/
+```
+
+Drop the core jar into `plugins/` and the module jars into
+`plugins/4netlib/modules/`. A module jar that is not present just disables that
+feature; its config section is then ignored.
+
+## Modules
+
+Optional features ship as separate jars loaded from `plugins/4netlib/modules/`
+at startup (and re-scanned on `/spy reload`, so modules can be added or removed
+without a full restart). The core jar always provides the hiding engine, the
+command and the connection handling.
+
+| Module jar | Feature | Config |
+|---|---|---|
+| `4netlib-safety.jar` | Invulnerable, no mob target, no pickup, no pressure plates, no sculk | `safety.*` |
+| `4netlib-chat.jar` | Spy chat handling (BLOCK / SEERS / PUBLIC) | `chat.mode` |
+| `4netlib-actionbar.jar` | Action-bar reminder for spies | `action-bar.*` |
+
+### Writing your own module
+
+A module is any jar in the modules folder that contains a `module.yml` and a
+class implementing `net.f02k.safetyspy.api.SpyModule`:
+
+```yaml
+# module.yml
+name: Example
+main: com.example.ExampleModule
+```
+
+```java
+public final class ExampleModule implements SpyModule {
+    @Override
+    public void onEnable(ModuleContext ctx) {
+        // ctx exposes: plugin(), logger(), spyManager(), registry(),
+        //              config(), messages()
+        // Registrations are cleaned up automatically on disable:
+        ctx.registerListener(new MyListener(ctx));
+        ctx.runTimer(new MyTask(ctx), 20L, 20L);
+        ctx.registerPacketListener(new MyPacketListener(ctx), PacketListenerPriority.NORMAL);
+    }
+}
+```
+
+Compile it against the core jar (`compileOnly`) and drop the result into
+`plugins/4netlib/modules/`.
 
 ## How it works
 

@@ -1,7 +1,6 @@
-package net.f02k.safetyspy.listener;
+package net.f02k.safetyspy.modules.safety;
 
-import net.f02k.safetyspy.SafetySpyPlugin;
-import net.f02k.safetyspy.spy.SpyManager;
+import net.f02k.safetyspy.api.ModuleContext;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,42 +18,40 @@ import org.bukkit.event.player.PlayerPickupArrowEvent;
  */
 public final class SafetyListener implements Listener {
 
-    private final SafetySpyPlugin plugin;
-    private final SpyManager manager;
+    private final ModuleContext context;
 
-    public SafetyListener(SafetySpyPlugin plugin, SpyManager manager) {
-        this.plugin = plugin;
-        this.manager = manager;
+    public SafetyListener(ModuleContext context) {
+        this.context = context;
     }
 
     private boolean spy(Object entity) {
-        return entity instanceof Player player && manager.isSpy(player);
+        return entity instanceof Player player && context.spyManager().isSpy(player);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event) {
-        if (plugin.spyConfig().invulnerable && spy(event.getEntity())) {
+        if (context.config().invulnerable && spy(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onTarget(EntityTargetLivingEntityEvent event) {
-        if (plugin.spyConfig().noMobTarget && spy(event.getTarget())) {
+        if (context.config().noMobTarget && spy(event.getTarget())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
-        if (plugin.spyConfig().noItemPickup && spy(event.getEntity())) {
+        if (context.config().noItemPickup && spy(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onArrowPickup(PlayerPickupArrowEvent event) {
-        if (plugin.spyConfig().noItemPickup && spy(event.getPlayer())) {
+        if (context.config().noItemPickup && spy(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
@@ -62,14 +59,14 @@ public final class SafetyListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPhysical(PlayerInteractEvent event) {
         if (event.getAction() == Action.PHYSICAL
-                && plugin.spyConfig().noPhysicalInteract && spy(event.getPlayer())) {
+                && context.config().noPhysicalInteract && spy(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSculk(BlockReceiveGameEvent event) {
-        if (plugin.spyConfig().noSculk && spy(event.getEntity())) {
+        if (context.config().noSculk && spy(event.getEntity())) {
             event.setCancelled(true);
         }
     }

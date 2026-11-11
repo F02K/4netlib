@@ -1,0 +1,3 @@
+name: Safety
+main: net.f02k.safetyspy.modules.safety.SafetyModule
+description: Protects spies from interactions that could reveal them.

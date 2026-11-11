@@ -1,7 +1,7 @@
-package net.f02k.safetyspy.listener;
+package net.f02k.safetyspy.modules.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.f02k.safetyspy.SafetySpyPlugin;
+import net.f02k.safetyspy.api.ModuleContext;
 import net.f02k.safetyspy.config.ChatMode;
 import net.f02k.safetyspy.spy.SpyManager;
 import net.kyori.adventure.text.Component;
@@ -19,24 +19,23 @@ import java.util.List;
  */
 public final class ChatListener implements Listener {
 
-    private final SafetySpyPlugin plugin;
-    private final SpyManager manager;
+    private final ModuleContext context;
 
-    public ChatListener(SafetySpyPlugin plugin, SpyManager manager) {
-        this.plugin = plugin;
-        this.manager = manager;
+    public ChatListener(ModuleContext context) {
+        this.context = context;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onChat(AsyncChatEvent event) {
+        SpyManager manager = context.spyManager();
         Player spy = event.getPlayer();
         if (!manager.isSpy(spy)) {
             return;
         }
-        ChatMode mode = plugin.spyConfig().chatMode;
+        ChatMode mode = context.config().chatMode;
         if (mode == ChatMode.BLOCK) {
             event.setCancelled(true);
-            plugin.messages().send(spy, "chat-blocked");
+            context.messages().send(spy, "chat-blocked");
             return;
         }
 

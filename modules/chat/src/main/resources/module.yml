@@ -1,0 +1,3 @@
+name: Chat
+main: net.f02k.safetyspy.modules.chat.ChatModule
+description: Handles public chat of spies (config.yml -> chat.mode).

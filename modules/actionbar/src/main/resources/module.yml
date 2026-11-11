@@ -1,0 +1,3 @@
+name: ActionBar
+main: net.f02k.safetyspy.modules.actionbar.ActionBarModule
+description: Reminds spies that they are in spy mode (config.yml -> action-bar).

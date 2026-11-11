@@ -5,18 +5,16 @@ import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import net.f02k.safetyspy.command.CommandAccess;
 import net.f02k.safetyspy.command.SpyCommand;
+import net.f02k.safetyspy.module.ModuleManager;
 import net.f02k.safetyspy.config.Messages;
 import net.f02k.safetyspy.config.SpyConfig;
-import net.f02k.safetyspy.listener.ChatListener;
 import net.f02k.safetyspy.listener.CommandAccessListener;
 import net.f02k.safetyspy.listener.CommandListener;
 import net.f02k.safetyspy.listener.ConnectionListener;
-import net.f02k.safetyspy.listener.SafetyListener;
 import net.f02k.safetyspy.packet.SpyPacketListener;
 import net.f02k.safetyspy.spy.SpyManager;
 import net.f02k.safetyspy.spy.SpyStorage;
 import net.f02k.safetyspy.spy.VisibilityRegistry;
-import net.f02k.safetyspy.task.ActionBarTask;
 import net.f02k.safetyspy.task.SeerRefreshTask;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -33,7 +31,9 @@ public final class SafetySpyPlugin extends JavaPlugin {
     private volatile SpyConfig spyConfig;
     private volatile Messages messages;
     private SpyManager manager;
+    private VisibilityRegistry registry;
     private CommandAccess access;
+    private ModuleManager moduleManager;
     private PacketListenerCommon packetListener;
     private final List<BukkitTask> tasks = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public final class SafetySpyPlugin extends JavaPlugin {
 
         SpyStorage storage = new SpyStorage(this);
         storage.load();
-        VisibilityRegistry registry = new VisibilityRegistry(spyConfig);
+        registry = new VisibilityRegistry(spyConfig);
         manager = new SpyManager(this, registry, storage);
 
         packetListener = PacketEvents.getAPI().getEventManager()
@@ -53,8 +53,6 @@ public final class SafetySpyPlugin extends JavaPlugin {
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new ConnectionListener(this, manager), this);
-        pm.registerEvents(new SafetyListener(this, manager), this);
-        pm.registerEvents(new ChatListener(this, manager), this);
         pm.registerEvents(new CommandListener(this, manager), this);
 
         PluginCommand command = getCommand("spy");
@@ -72,10 +70,16 @@ public final class SafetySpyPlugin extends JavaPlugin {
             manager.handleJoin(player);
         }
         startTasks();
+
+        moduleManager = new ModuleManager(this);
+        moduleManager.enableAll();
     }
 
     @Override
     public void onDisable() {
+        if (moduleManager != null) {
+            moduleManager.disableAll();
+        }
         stopTasks();
         if (packetListener != null) {
             PacketEvents.getAPI().getEventManager().unregisterListener(packetListener);
@@ -97,10 +101,12 @@ public final class SafetySpyPlugin extends JavaPlugin {
         }
         stopTasks();
         startTasks();
+        if (moduleManager != null) {
+            moduleManager.reload();
+        }
     }
 
     private void startTasks() {
-        tasks.add(Bukkit.getScheduler().runTaskTimer(this, new ActionBarTask(this, manager), 20L, 20L));
         long interval = spyConfig.refreshIntervalTicks;
         tasks.add(Bukkit.getScheduler().runTaskTimer(this, new SeerRefreshTask(manager), interval, interval));
     }
@@ -116,5 +122,17 @@ public final class SafetySpyPlugin extends JavaPlugin {
 
     public Messages messages() {
         return messages;
+    }
+
+    public SpyManager manager() {
+        return manager;
+    }
+
+    public VisibilityRegistry registry() {
+        return registry;
+    }
+
+    public ModuleManager moduleManager() {
+        return moduleManager;
     }
 }
