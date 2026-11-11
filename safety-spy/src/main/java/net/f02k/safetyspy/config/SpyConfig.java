@@ -2,8 +2,10 @@ package net.f02k.safetyspy.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -11,9 +13,13 @@ import java.util.stream.Collectors;
  */
 public final class SpyConfig {
 
+    public final Set<String> accessNames;
+    public final Set<UUID> accessUuids;
+
     public final boolean hideEntity;
     public final boolean hideTablist;
-    public final boolean keepProfile;
+    public final boolean hideProfile;
+    public final boolean hideFromOtherSpies;
     public final boolean hideServerList;
     public final boolean hideTabComplete;
     public final boolean hideLocatorBar;
@@ -23,7 +29,6 @@ public final class SpyConfig {
     public final Set<String> playerCommands;
 
     public final String seePermission;
-    public final boolean spiesSeeEachOther;
     public final long refreshIntervalTicks;
 
     public final ChatMode chatMode;
@@ -45,9 +50,23 @@ public final class SpyConfig {
     public final boolean actionBarEnabled;
 
     public SpyConfig(FileConfiguration c) {
+        Set<String> names = new HashSet<>();
+        Set<UUID> uuids = new HashSet<>();
+        for (String entry : c.getStringList("access.players")) {
+            String value = entry.trim();
+            try {
+                uuids.add(UUID.fromString(value));
+            } catch (IllegalArgumentException notUuid) {
+                names.add(value.toLowerCase(Locale.ROOT));
+            }
+        }
+        accessNames = Set.copyOf(names);
+        accessUuids = Set.copyOf(uuids);
+
         hideEntity = c.getBoolean("hide.entity", true);
         hideTablist = c.getBoolean("hide.tablist", true);
-        keepProfile = c.getBoolean("hide.keep-profile", false);
+        hideProfile = c.getBoolean("hide.profile", true);
+        hideFromOtherSpies = c.getBoolean("hide.from-other-spies", true);
         hideServerList = c.getBoolean("hide.server-list", true);
         hideTabComplete = c.getBoolean("hide.tab-complete", true);
         hideLocatorBar = c.getBoolean("hide.locator-bar", true);
@@ -59,7 +78,6 @@ public final class SpyConfig {
                 .collect(Collectors.toUnmodifiableSet());
 
         seePermission = c.getString("visibility.see-permission", "");
-        spiesSeeEachOther = c.getBoolean("visibility.spies-see-each-other", false);
         refreshIntervalTicks = Math.max(1L, c.getLong("visibility.refresh-interval-ticks", 40L));
 
         chatMode = ChatMode.parse(c.getString("chat.mode", "BLOCK"));
@@ -81,9 +99,14 @@ public final class SpyConfig {
         actionBarEnabled = c.getBoolean("action-bar.enabled", true);
     }
 
+    /** Whether the player is listed in {@code access.players}. */
+    public boolean hasAccess(UUID uuid, String name) {
+        return accessUuids.contains(uuid) || accessNames.contains(name.toLowerCase(Locale.ROOT));
+    }
+
     /** Remove the spy's player info entry completely from hidden viewers. */
     public boolean removeProfile() {
-        return hideTablist && hideEntity && !keepProfile;
+        return hideTablist && hideEntity && hideProfile;
     }
 
     /** Keep the player info entry but mark it as not listed. */

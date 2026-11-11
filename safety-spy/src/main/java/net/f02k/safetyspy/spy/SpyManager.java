@@ -119,7 +119,7 @@ public final class SpyManager {
 
         if (registry.isSpy(uuid)) {
             registry.updateEntityId(uuid, player.getName(), player.getEntityId());
-        } else if (player.hasPermission(AUTOJOIN_PERMISSION)
+        } else if ((config().hasAccess(uuid, player.getName()) && player.hasPermission(AUTOJOIN_PERMISSION))
                 || (config().rememberState && storage.contains(uuid))) {
             mutate(() -> registry.addSpy(uuid, player.getName(), player.getEntityId()));
             if (config().rememberState) {

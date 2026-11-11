@@ -5,30 +5,21 @@ api-version: '1.21'
 description: Safety spy mode for server staff - hides players completely via PacketEvents.
 depend: [packetevents]
 
+# /spy only exists for players listed in config.yml -> access.players.
 commands:
   spy:
     description: Toggle safety spy mode.
     usage: /spy [player|list|reload]
     aliases: [4netlib, sspy]
+    permission: 4netlib.command
 
-# Only 4netlib.use is given to OPs by default. Everything that could reveal a
-# spy (seeing, listing, toggling others) must be granted explicitly.
 permissions:
-  4netlib.use:
-    description: Toggle spy mode for yourself.
-    default: op
-  4netlib.reload:
-    description: Reload the configuration.
-    default: op
-  4netlib.others:
-    description: Toggle spy mode for other players.
-    default: false
-  4netlib.list:
-    description: List all players in spy mode.
+  4netlib.command:
+    description: Internal - granted automatically to players in access.players.
     default: false
   4netlib.see:
     description: See players that are in spy mode (only if enabled in config.yml).
     default: false
   4netlib.autojoin:
-    description: Automatically join the server in spy mode.
+    description: Join the server in spy mode (only for players in access.players).
     default: false

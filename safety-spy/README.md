@@ -14,7 +14,8 @@ Bukkit API – so the player is invisible in every place a client could see them
 | Option | Effect |
 |---|---|
 | `hide.entity` | Spawn, movement, metadata, equipment, animations, effects, passengers, damage … |
-| `hide.tablist` / `hide.keep-profile` | Tab list entry (removed completely, or only unlisted) |
+| `hide.tablist` / `hide.profile` | Tab list entry (profile removed completely, or only unlisted) |
+| `hide.from-other-spies` | Spies don't see each other either |
 | `hide.server-list` | Online count + player sample in the multiplayer list |
 | `hide.tab-complete` | Spy name in command suggestions |
 | `hide.locator-bar` | Waypoint on the 1.21.6+ locator bar |
@@ -25,23 +26,29 @@ Bukkit API – so the player is invisible in every place a client could see them
 | `safety.*` | Invulnerable, no mob targeting, no pickup, no pressure plates, no sculk, no collision, ignored for sleep, flight |
 | `persistence.remember-state` | Spy mode survives reconnects and restarts (hidden already at login) |
 
-## Commands & permissions
+## Commands & access
 
-| Command | Permission | Default |
-|---|---|---|
-| `/spy` | `4netlib.use` | op |
-| `/spy reload` | `4netlib.reload` | op |
-| `/spy <player>` | `4netlib.others` | false |
-| `/spy list` | `4netlib.list` | false |
-| – see spies | `visibility.see-permission` (empty = nobody) | false |
-| – join in spy mode | `4netlib.autojoin` | false |
+`/spy` exists **only for players listed in `access.players`** (name or UUID).
+For everyone else – OPs included – it is removed from the command tree,
+tab-complete and `/help`, and answers like an unknown command. The console can
+always use it. The list is empty by default.
+
+| Command | Effect |
+|---|---|
+| `/spy` | Toggle spy mode for yourself |
+| `/spy <player>` | Toggle spy mode for another player |
+| `/spy list` | Online spies (only those you can see) |
+| `/spy reload` | Reload `config.yml` (incl. access list) |
 
 Aliases: `/4netlib`, `/sspy`.
 
+| Permission | Effect | Default |
+|---|---|---|
+| `4netlib.autojoin` | Join in spy mode (only for listed players) | false |
+| `4netlib.see` | See spies – only if set as `visibility.see-permission` | false |
+
 **Spies are hidden from everyone – including OPs.** OP status never grants
-seeing a spy. Only if `visibility.see-permission` is set *and* that permission
-is explicitly granted to a player (e.g. via LuckPerms) can they see spies.
-`/spy list` and `/spy <player>` only show / affect spies the sender can see.
+seeing a spy. All `hide.*` and `safety.*` options are enabled by default.
 
 ## Build
 

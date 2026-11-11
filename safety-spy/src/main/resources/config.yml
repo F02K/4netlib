@@ -4,6 +4,14 @@
 #  Messages use MiniMessage: https://docs.advntr.dev/minimessage/format
 # ------------------------------------------------------------------
 
+# Only these players can see and use /spy (name or UUID). For everyone else -
+# including OPs - the command does not exist (hidden from tab-complete,
+# command tree and /help, answers "Unknown command"). Console can always use it.
+access:
+  players: []
+  #  - "Notch"
+  #  - "069a79f4-44e9-4726-a5be-fca90e38aaf5"
+
 # What is hidden from players who are NOT allowed to see spies.
 hide:
   # Player entity in the world (spawn, movement, equipment, animations, ...).
@@ -11,10 +19,12 @@ hide:
   # Entry in the tab list. If 'entity' is false the spy is only unlisted
   # (the client still needs the profile to render the entity).
   tablist: true
-  # Keep the spy's profile known to clients and only unlist it from the tab list.
-  # false = profile is removed completely (strongest, also against hacked clients).
-  # true  = signed private messages (/msg, /me) of the spy display normally for everyone.
-  keep-profile: false
+  # Remove the spy's profile completely from clients (strongest, also against
+  # hacked clients). false = only unlisted from the tab list; signed private
+  # messages (/msg, /me) of the spy then display normally for everyone.
+  profile: true
+  # Spies are also hidden from other spies.
+  from-other-spies: true
   # Player count and player sample in the multiplayer server list.
   server-list: true
   # Player name in command tab-completion suggestions.
@@ -60,8 +70,6 @@ visibility:
   # Empty = nobody can see spies. Set e.g. "4netlib.see" to allow it.
   # The permission must be granted explicitly; OP status alone never grants it.
   see-permission: ""
-  # Spies see other spies.
-  spies-see-each-other: false
   # How often (in ticks) permission changes of viewers are re-checked.
   refresh-interval-ticks: 40
 
@@ -110,7 +118,6 @@ messages:
   disabled: "<red>Spy mode disabled."
   enabled-other: "<green>Spy mode enabled for <white><player></white>."
   disabled-other: "<red>Spy mode disabled for <white><player></white>."
-  no-permission: "<red>You don't have permission."
   player-only: "<red>Only players can use this."
   player-not-found: "<red>Player <white><player></white> not found."
   list-header: "<gray>Players in spy mode (<white><count></white>):"

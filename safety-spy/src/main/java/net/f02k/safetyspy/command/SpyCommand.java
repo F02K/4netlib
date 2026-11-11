@@ -19,30 +19,27 @@ import java.util.Locale;
  */
 public final class SpyCommand implements TabExecutor {
 
-    private static final String PERM_USE = "4netlib.use";
-    private static final String PERM_OTHERS = "4netlib.others";
-    private static final String PERM_LIST = "4netlib.list";
-    private static final String PERM_RELOAD = "4netlib.reload";
-
     private final SafetySpyPlugin plugin;
     private final SpyManager manager;
+    private final CommandAccess access;
 
-    public SpyCommand(SafetySpyPlugin plugin, SpyManager manager) {
+    public SpyCommand(SafetySpyPlugin plugin, SpyManager manager, CommandAccess access) {
         this.plugin = plugin;
         this.manager = manager;
+        this.access = access;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Messages messages = plugin.messages();
+        if (!access.isAllowed(sender)) {
+            access.sendUnknown(sender, label + (args.length > 0 ? " " + String.join(" ", args) : ""));
+            return true;
+        }
 
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
                 messages.send(sender, "player-only");
-                return true;
-            }
-            if (!player.hasPermission(PERM_USE)) {
-                messages.send(sender, "no-permission");
                 return true;
             }
             messages.send(player, manager.toggle(player) ? "enabled" : "disabled");
@@ -52,10 +49,6 @@ public final class SpyCommand implements TabExecutor {
         switch (args[0].toLowerCase(Locale.ROOT)) {
             case "list" -> list(sender, messages);
             case "reload" -> {
-                if (!sender.hasPermission(PERM_RELOAD)) {
-                    messages.send(sender, "no-permission");
-                    return true;
-                }
                 plugin.reload();
                 plugin.messages().send(sender, "reloaded");
             }
@@ -65,10 +58,6 @@ public final class SpyCommand implements TabExecutor {
     }
 
     private void list(CommandSender sender, Messages messages) {
-        if (!sender.hasPermission(PERM_LIST)) {
-            messages.send(sender, "no-permission");
-            return;
-        }
         List<Player> spies = manager.onlineSpies();
         if (sender instanceof Player viewer) {
             spies.removeIf(spy -> !canSee(viewer, spy));
@@ -84,10 +73,6 @@ public final class SpyCommand implements TabExecutor {
     }
 
     private void toggleOther(CommandSender sender, String name, Messages messages) {
-        if (!sender.hasPermission(PERM_OTHERS)) {
-            messages.send(sender, "no-permission");
-            return;
-        }
         Player target = Bukkit.getPlayerExact(name);
         if (target == null || (sender instanceof Player viewer && !canSee(viewer, target))) {
             messages.send(sender, "player-not-found", Placeholder.unparsed("player", name));
@@ -103,22 +88,16 @@ public final class SpyCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length != 1) {
+        if (args.length != 1 || !access.isAllowed(sender)) {
             return List.of();
         }
         String prefix = args[0].toLowerCase(Locale.ROOT);
         List<String> result = new ArrayList<>();
-        if (sender.hasPermission(PERM_LIST)) {
-            result.add("list");
-        }
-        if (sender.hasPermission(PERM_RELOAD)) {
-            result.add("reload");
-        }
-        if (sender.hasPermission(PERM_OTHERS)) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (!(sender instanceof Player viewer) || viewer.canSee(player) && canSee(viewer, player)) {
-                    result.add(player.getName());
-                }
+        result.add("list");
+        result.add("reload");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!(sender instanceof Player viewer) || viewer.canSee(player) && canSee(viewer, player)) {
+                result.add(player.getName());
             }
         }
         result.removeIf(entry -> !entry.toLowerCase(Locale.ROOT).startsWith(prefix));

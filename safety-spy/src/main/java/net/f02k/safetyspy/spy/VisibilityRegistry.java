@@ -136,7 +136,7 @@ public final class VisibilityRegistry {
         if (seers.contains(viewer)) {
             return true;
         }
-        return config.spiesSeeEachOther && isSpy(viewer);
+        return !config.hideFromOtherSpies && isSpy(viewer);
     }
 
     /** Whether {@code target} is a spy that must be hidden from {@code viewer}. */
